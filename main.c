@@ -6,7 +6,7 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 14:31:55 by taya              #+#    #+#             */
-/*   Updated: 2025/06/22 12:20:53 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:03:00 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,20 @@ void setup_shell_terminal(void)
         perror("Couldn't set terminal control");
         exit(1);
     }
+}
+#include <termios.h>
+
+void    reset_terminal_mode(void)
+{
+    struct termios    term;
+
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag |= (ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    write(STDERR_FILENO, "\r\033[K", 4);
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag &= ~(ECHOCTL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 void	handler(int sig)
@@ -106,7 +120,6 @@ int main(int argc, char **argv, char **env)
         node = parse_op(token_list);
         if(!node)
 			continue;
-        // print_tree(node, 0, "NODE");
         process_heredocs_tree(node); 
         last_exit_status = execute_tree(node, &envlist, last_exit_status);  
         free(input);
@@ -114,3 +127,4 @@ int main(int argc, char **argv, char **env)
     free_resources(input, lexer, token_list, node);
     return (0);
 }
+

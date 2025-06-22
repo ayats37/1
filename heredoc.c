@@ -6,7 +6,7 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 10:58:04 by taya              #+#    #+#             */
-/*   Updated: 2025/06/22 12:20:49 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 14:57:20 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void process_heredocs_tree(t_tree *node)
     {
         if (redir->type == HEREDOC)
         {
+            write(1, "ooo\n", 4);
             if (pipe(pipe_fd) == -1)
             {
                 perror("pipe failed");
@@ -82,7 +83,10 @@ void process_heredocs_tree(t_tree *node)
                 exit(0);
             }
             close(pipe_fd[1]);
+            signal(SIGINT, SIG_IGN);
             waitpid(pid, &status, 0);
+            signal(SIGINT, handler);
+            reset_terminal_mode();
 
             if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
             {

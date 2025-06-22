@@ -6,78 +6,88 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:58:09 by ouel-afi          #+#    #+#             */
-/*   Updated: 2025/06/22 12:59:45 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:08:10 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "./libft/libft.h"
-# include <errno.h>
-# include <fcntl.h>
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <signal.h>
+#include "./libft/libft.h"
+# include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
-# include <sys/types.h>
+# include <signal.h>
+# include <fcntl.h>
 # include <sys/wait.h>
+# include <sys/types.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <string.h>
+#include <errno.h>
+
+#include "./libft/libft.h"
 # include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <signal.h>
+# include <fcntl.h>
+# include <sys/wait.h>
+# include <sys/types.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <string.h>
+#include <errno.h>
 
-extern volatile sig_atomic_t g_heredoc_interrupted;
 
-typedef struct s_lexer
-{
-	int					position;
-	int					lenght;
-	char				*input;
-}						t_lexer;
+#define MAX_PIPES 1024
 
-typedef enum s_type
-{
-	CMD = 1,
-	PIPE,
+typedef struct s_lexer {
+	int position;
+	int lenght;
+	char *input;
+}	t_lexer;
+
+typedef enum s_type {
+    CMD = 1,
+	PIPE,	
 	SINGLE_QUOTE,
 	DOUBLE_QUOTE,
-	REDIR_IN,
-	REDIR_OUT,
-	APPEND,
-	HEREDOC,
-	OPEN_PAREN,
-	CLOSE_PAREN,
-	OR,
-	AND
-}						t_type;
+    REDIR_IN,
+    REDIR_OUT,
+    APPEND,
+    HEREDOC,
+    OPEN_PAREN,
+    CLOSE_PAREN,
+	OR,		
+	AND		
+} t_type;
 
-typedef struct s_token
-{
-	char				*value;
-	t_type				type;
-	int					has_space;
-	int					fd;
-	struct s_token		*next;
-}						t_token;
+typedef struct s_token {
+	char	*value;
+	t_type		type;
+	int			has_space;
+	int fd;
+	struct s_token *next;
+}	t_token;
 
-typedef struct s_tree
-{
-	t_token				*redir;
-	t_type				type;
-	int					has_space;
-	char				*value;
-	struct s_tree		*left;
-	struct s_tree		*right;
-	char				**cmd;
-}						t_tree;
+typedef struct s_tree {
+	t_token *redir;
+	t_type type;
+	int		has_space;
+	char *value;
+	struct s_tree	*left;
+	struct s_tree	*right;
+	char **cmd;
+}	t_tree;
 
 typedef struct s_env
 {
-	char				*name;
-	char				*value;
-	struct s_env		*next;
-	char				**env;
-}						t_env;
+	char *name;
+	char *value;
+	struct s_env *next;
+	char **env;
+}	t_env;
 
 // ***************************parsing***************************
 t_lexer					*initialize_lexer(char *input);
@@ -184,6 +194,7 @@ void					setup_shell_terminal(void);
 void					heredoc_sigint_handler(int sig);
 char					*str_join_free(char *s1, const char *s2);
 char					*char_to_str(char c);
-int						process_heredocs_tree(t_tree *node);
+void process_heredocs_tree(t_tree *node);
+void    reset_terminal_mode(void);
 
 #endif
