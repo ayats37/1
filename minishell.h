@@ -6,7 +6,7 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:58:09 by ouel-afi          #+#    #+#             */
-/*   Updated: 2025/06/22 15:08:10 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:41:44 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 #include <errno.h>
 
 
-#define MAX_PIPES 1024
+
 
 typedef struct s_lexer {
 	int position;
@@ -88,6 +88,8 @@ typedef struct s_env
 	struct s_env *next;
 	char **env;
 }	t_env;
+
+extern int g_heredoc_interrupted;
 
 // ***************************parsing***************************
 t_lexer					*initialize_lexer(char *input);
@@ -188,7 +190,7 @@ int						handle_redirection(t_tree *node);
 int						execute_pipe(t_tree *node, t_env **envlist,
 							int last_status);
 void					handle_heredoc_input(char *delimiter, int write_fd);
-void					write_error(char *command, char *message);
+void write_error(char *command, char *message, int should_exit);
 void					handler(int sig);
 void					setup_shell_terminal(void);
 void					heredoc_sigint_handler(int sig);
@@ -196,5 +198,6 @@ char					*str_join_free(char *s1, const char *s2);
 char					*char_to_str(char c);
 void process_heredocs_tree(t_tree *node);
 void    reset_terminal_mode(void);
+void process_all_heredocs(t_tree *node);
 
 #endif

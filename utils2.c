@@ -6,32 +6,36 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 00:50:21 by taya              #+#    #+#             */
-/*   Updated: 2025/06/22 15:06:31 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:28:58 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	write_error(char *command, char *message)
+void write_error(char *command, char *message, int should_exit)
 {
-	int	exit_status;
-
-	write(STDERR_FILENO, "minishell: ", 11);
-	if (command)
-	{
-		write(STDERR_FILENO, command, strlen(command));
-		write(STDERR_FILENO, ": ", 2);
-	}
-	write(STDERR_FILENO, message, strlen(message));
-	write(STDERR_FILENO, "\n", 1);
-	if (strstr(message, "command not found"))
-		exit_status = 127;
-	else if (strstr(message, "is a directory")
-		|| strstr(message, "Permission denied"))
-		exit_status = 126;
-	else
-		exit_status = 1;
-	exit(exit_status);
+    int exit_status;
+    
+    write(STDERR_FILENO, "minishell: ", 11);
+    if (command)
+    {
+        write(STDERR_FILENO, command, strlen(command));
+        write(STDERR_FILENO, ": ", 2);
+    }
+    write(STDERR_FILENO, message, strlen(message));
+    write(STDERR_FILENO, "\n", 1);
+    
+    if (should_exit)
+    {
+        if (strstr(message, "command not found"))
+            exit_status = 127;
+        else if (strstr(message, "is a directory") 
+            || strstr(message, "Permission denied"))
+            exit_status = 126;
+        else
+            exit_status = 1;
+        exit(exit_status);
+    }
 }
 
 int	is_builtin(char *cmd)

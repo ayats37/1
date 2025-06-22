@@ -6,7 +6,7 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 10:51:14 by taya              #+#    #+#             */
-/*   Updated: 2025/06/22 00:50:43 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:30:29 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,21 +57,21 @@ int	execute_cmd(char **cmds, t_env *envlist, t_tree *node)
 
 	pid = fork();
 	if (pid == -1)
-		write_error(cmds[0], "fork failed");
+		write_error(cmds[0], "fork failed", 0);
 	if (pid == 0)
 	{
 		if (node && node->redir)
 			handle_redirection(node);
 		full_path = find_cmd_path(cmds[0], &envlist);
 		if (!full_path)
-			write_error(cmds[0], "command not found");
+			write_error(cmds[0], "command not found", 1);
 		env_array = env_list_to_array(envlist);
 		if (!env_array)
 			return (free(full_path), write_error(cmds[0],
-					"environment conversion failed"), 1);
+					"environment conversion failed", 1), 1);
 		execve(full_path, cmds, env_array);
 		return (free(full_path), free_env_array(env_array), write_error(cmds[0],
-				"command not found"), 1);
+				"command not found", 1), 1);
 	}
 	waitpid(pid, &status, 0);
 	return (WEXITSTATUS(status));

@@ -6,7 +6,7 @@
 /*   By: taya <taya@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 10:51:02 by taya              #+#    #+#             */
-/*   Updated: 2025/06/22 15:00:53 by taya             ###   ########.fr       */
+/*   Updated: 2025/06/22 15:32:18 by taya             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,10 @@ int handle_redirection(t_tree *node)
     {
         if (redir->type == HEREDOC)
         {
-			write(1, "aaa\n", 4);
             if (redir->fd > 0)
             {
                 if (dup2(redir->fd, STDIN_FILENO) == -1)
-                    write_error(NULL, "dup2 failed");
+                    write_error(NULL, "dup2 failed", 0);
                 close(redir->fd);
             }
         }
@@ -36,27 +35,27 @@ int handle_redirection(t_tree *node)
         {
             fd = open(redir->value, O_RDONLY);
             if (fd == -1)
-                write_error(redir->value, "No such file or directory");
+                write_error(redir->value, "No such file or directory", 0);
             if (dup2(fd, STDIN_FILENO) == -1)
-                write_error(NULL, "dup2 failed");
+                write_error(NULL, "dup2 failed", 0);
             close(fd);
         }
         else if (redir->type == REDIR_OUT)
         {
             fd = open(redir->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (fd == -1)
-                write_error(redir->value, "Permission denied");
+                write_error(redir->value, "Permission denied", 0);
             if (dup2(fd, STDOUT_FILENO) == -1)
-                write_error(NULL, "dup2 failed");
+                write_error(NULL, "dup2 failed", 0);
             close(fd);
         }
         else if (redir->type == APPEND)
         {
             fd = open(redir->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
             if (fd == -1)
-                write_error(redir->value, "No such file or directory");
+                write_error(redir->value, "No such file or directory", 0);
             if (dup2(fd, STDOUT_FILENO) == -1)
-                write_error(NULL, "dup2 failed");
+                write_error(NULL, "dup2 failed", 0);
             close(fd);
         }
         redir = redir->next;
